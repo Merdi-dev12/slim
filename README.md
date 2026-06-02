@@ -1,59 +1,142 @@
-# SlimFrontend
+# Slim Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.13.
+Application Angular 21 standalone.
 
-## Development server
+Ce repository contient une structure simple pour travailler proprement en equipe: peu de dossiers, des responsabilites claires, et des exemples minimaux pour les guards, interceptors, pipes, environnements, composants partages, Tailwind, DaisyUI, Flowbite Angular et icones.
 
-To start a local development server, run:
+## Stack
 
-```bash
-ng serve
-```
+- Angular 21 avec composants standalone
+- Tailwind CSS 4
+- DaisyUI 5
+- Flowbite Angular
+- Lucide Angular pour les icones
+- Vitest pour les tests unitaires Angular
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Demarrer le projet
 
 ```bash
-ng generate --help
+git clone <url-du-repository>
+cd slim-frontend
+npm install
+npm start
 ```
 
-## Building
+L'application demarre ensuite sur l'URL affichee par Angular CLI, generalement `http://localhost:4200`.
 
-To build the project run:
+## Commandes utiles
 
 ```bash
-ng build
+npm start
+npm run build
+npm test
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Architecture
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
+```text
+src/
+├── app/
+│   ├── core/
+│   │   ├── config/
+│   │   ├── guards/
+│   │   ├── interceptors/
+│   │   ├── models/
+│   │   └── services/
+│   ├── features/
+│   │   └── home/
+│   │       ├── pages/
+│   │       └── home.routes.ts
+│   ├── layouts/
+│   │   └── app-shell/
+│   ├── shared/
+│   │   ├── pipes/
+│   │   ├── ui/
+│   │   └── utils/
+│   ├── app.config.ts
+│   ├── app.routes.ts
+│   └── app.ts
+├── environments/
+│   ├── environment.ts
+│   └── environment.development.ts
+├── main.ts
+└── styles.css
 ```
 
-## Running end-to-end tests
+## Roles des dossiers
 
-For end-to-end (e2e) testing, run:
+`core/` contient l'infrastructure globale de l'application: configuration, services singletons, guards, interceptors HTTP, modeles globaux. On evite d'y mettre des composants visuels.
 
-```bash
-ng e2e
+`features/` contient les fonctionnalites metier. Chaque feature garde ses pages, routes, composants internes, services locaux et modeles proches de son domaine.
+
+`shared/` contient uniquement ce qui est reutilisable et sans dependance a une feature precise: composants UI generiques, pipes, directives, fonctions utilitaires.
+
+`layouts/` contient les coques de pages: sidebar, header, layout authentifie, layout public.
+
+`environments/` contient les valeurs remplacees selon la configuration Angular: API URL, flags simples, mode production.
+
+## Comment creer une feature
+
+1. Creer un dossier dans `src/app/features/<nom-feature>`.
+2. Ajouter un fichier `<nom-feature>.routes.ts`.
+3. Creer les pages dans `pages/`.
+4. Garder les composants utilises seulement par cette feature dans son dossier.
+5. Ajouter une route lazy dans `src/app/app.routes.ts`.
+
+Exemple:
+
+```text
+src/app/features/orders/
+├── orders.routes.ts
+├── pages/
+│   └── orders-list/
+│       ├── orders-list.ts
+│       └── orders-list.html
+└── services/
+    └── orders.service.ts
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Conventions
 
-## Additional Resources
+- Organiser par feature avant d'organiser par type.
+- Garder les fichiers proches du code qu'ils servent.
+- Utiliser les imports alias: `@core/*`, `@shared/*`, `@features/*`, `@env/*`.
+- Preferer `inject()` dans les services, guards et interceptors.
+- Garder les composants orientes affichage; sortir les traitements dans des services ou fonctions pures.
+- Ajouter les tests a cote du fichier teste quand la logique devient importante.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## UI
+
+Tailwind est importe dans `src/styles.css`.
+
+DaisyUI est active via:
+
+```css
+@plugin 'daisyui';
+```
+
+Flowbite Angular est scanne par Tailwind via:
+
+```css
+@source '../node_modules/flowbite-angular';
+```
+
+Pour les icones, utiliser `@lucide/angular` et importer uniquement les composants d'icones necessaires dans les composants Angular.
+
+## Environnements
+
+Angular remplace `src/environments/environment.ts` par `src/environments/environment.development.ts` en configuration development.
+
+La valeur `apiUrl` est centralisee dans:
+
+```text
+src/app/core/config/app-config.ts
+```
+
+## Sources de reference
+
+- Angular style guide: https://angular.dev/style-guide
+- Angular file structure: https://angular.dev/reference/configs/file-structure
+- Angular + Tailwind: https://angular.dev/guide/tailwind
+- DaisyUI install: https://daisyui.com/docs/install/
+- Flowbite Angular quickstart: https://flowbite-angular.com/docs/getting-started/quickstart
